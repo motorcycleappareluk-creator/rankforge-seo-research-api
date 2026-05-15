@@ -1,0 +1,14 @@
+{
+  "name": "rankforge-seo-research-api",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Serverless /api/seo-research endpoint for RankForge using DataForSEO and optional Google Search Console.",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "dev:vercel": "vercel dev",
+    "dev:netlify": "netlify dev"
+  }
+}
