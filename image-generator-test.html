@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>RankForge Image Generator Test</title>
+  <style>
+    body{font-family:system-ui,Arial,sans-serif;background:#0f1115;color:#f2f2f2;margin:0;padding:32px;}
+    .wrap{max-width:900px;margin:0 auto;}
+    label{display:block;margin:14px 0 6px;color:#b7bcc7;font-size:14px;}
+    input,textarea,select,button{width:100%;box-sizing:border-box;border:1px solid #303642;background:#171b22;color:#fff;border-radius:10px;padding:12px;font-size:15px;}
+    textarea{min-height:120px;resize:vertical;}
+    button{background:#8B1E1E;border-color:#8B1E1E;font-weight:700;cursor:pointer;margin-top:16px;}
+    button:disabled{opacity:.55;cursor:not-allowed;}
+    img{max-width:100%;border-radius:14px;margin-top:24px;border:1px solid #303642;}
+    pre{white-space:pre-wrap;background:#171b22;padding:14px;border-radius:10px;color:#b7bcc7;}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>RankForge Image Generator Test</h1>
+    <p>This calls your secure backend endpoint at <code>/api/generate-image</code>. Do not put your OpenAI key in this file.</p>
+
+    <label>Article title</label>
+    <input id="title" value="Why Riding Clears Your Head" />
+
+    <label>Keyword</label>
+    <input id="keyword" value="motorcycle rider mindset" />
+
+    <label>Context</label>
+    <textarea id="context">Create a cinematic blog hero image for a motorcycle lifestyle article about using the road to reset mentally.</textarea>
+
+    <label>Style</label>
+    <select id="style">
+      <option value="editorial">Editorial</option>
+      <option value="blog">Blog Hero</option>
+      <option value="social">Social Graphic</option>
+      <option value="infographic">Infographic Background</option>
+      <option value="ecommerce">Ecommerce Lifestyle</option>
+    </select>
+
+    <label>Size</label>
+    <select id="size">
+      <option value="1536x1024">Landscape 1536x1024</option>
+      <option value="1024x1024">Square 1024x1024</option>
+      <option value="1024x1536">Portrait 1024x1536</option>
+    </select>
+
+    <label>Quality</label>
+    <select id="quality">
+      <option value="low">Low</option>
+      <option value="medium" selected>Medium</option>
+      <option value="high">High</option>
+    </select>
+
+    <button id="btn">Generate Image</button>
+    <pre id="status">Ready.</pre>
+    <img id="image" alt="Generated preview" style="display:none" />
+  </div>
+
+  <script>
+    const btn = document.getElementById('btn');
+    const statusEl = document.getElementById('status');
+    const img = document.getElementById('image');
+
+    btn.addEventListener('click', async () => {
+      btn.disabled = true;
+      img.style.display = 'none';
+      statusEl.textContent = 'Generating...';
+      try {
+        const res = await fetch('/api/generate-image', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title: document.getElementById('title').value,
+            keyword: document.getElementById('keyword').value,
+            context: document.getElementById('context').value,
+            style: document.getElementById('style').value,
+            size: document.getElementById('size').value,
+            quality: document.getElementById('quality').value,
+            brand: 'RankForge SEO Content Suite'
+          })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Image generation failed');
+        statusEl.textContent = 'Success. Prompt used:\n\n' + data.prompt;
+        img.src = data.data_url || data.image_url;
+        img.style.display = 'block';
+      } catch (err) {
+        statusEl.textContent = 'Error: ' + err.message;
+      } finally {
+        btn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
